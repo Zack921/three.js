@@ -11401,7 +11401,7 @@
 	}
 
 	function WebGLExtensions(gl) {
-		const extensions = {};
+		const extensions = {}; // gl.getExtension 表示启用一个 webgl 扩展
 
 		function getExtension(name) {
 			if (extensions[name] !== undefined) {
@@ -17410,7 +17410,8 @@
 			}
 
 			return null;
-		}
+		} // 优先获取 webgl2 的上下文
+
 
 		try {
 			const contextAttributes = {
@@ -17468,17 +17469,26 @@
 		let utils, bindingStates;
 
 		function initGLContext() {
-			extensions = new WebGLExtensions(_gl);
-			capabilities = new WebGLCapabilities(_gl, extensions, parameters);
+			extensions = new WebGLExtensions(_gl); // 启用 webgl 扩展
+
+			capabilities = new WebGLCapabilities(_gl, extensions, parameters); // 获取当前 webgl 能力属性，比如 精度 - precision
+
 			extensions.init(capabilities);
-			utils = new WebGLUtils(_gl, extensions, capabilities);
-			state = new WebGLState(_gl, extensions, capabilities);
+			utils = new WebGLUtils(_gl, extensions, capabilities); // 提供一个 convert 来拿属性
+
+			state = new WebGLState(_gl, extensions, capabilities); // 修改 webgl 状态
+
 			_currentDrawBuffers[0] = _gl.BACK;
-			info = new WebGLInfo(_gl);
-			properties = new WebGLProperties();
-			textures = new WebGLTextures(_gl, extensions, state, properties, capabilities, utils, info);
-			cubemaps = new WebGLCubeMaps(_this);
-			attributes = new WebGLAttributes(_gl, capabilities);
+			info = new WebGLInfo(_gl); // 记录 webgl render相关数据，比如绘制的 triangles 数量
+
+			properties = new WebGLProperties(); // 用 WeakMap 缓存 webgl 属性的读取，可能不想频繁与 gpu 交互吧
+
+			textures = new WebGLTextures(_gl, extensions, state, properties, capabilities, utils, info); // obj for 纹理写入
+
+			cubemaps = new WebGLCubeMaps(_this); // obj for cubeMap 纹理写入
+
+			attributes = new WebGLAttributes(_gl, capabilities); // crud api for attributes
+
 			bindingStates = new WebGLBindingStates(_gl, extensions, attributes, capabilities);
 			geometries = new WebGLGeometries(_gl, attributes, info, bindingStates);
 			objects = new WebGLObjects(_gl, geometries, attributes, info);
@@ -17949,6 +17959,8 @@
 		xr.addEventListener('sessionend', onXRSessionEnd); // Rendering
 
 		this.render = function (scene, camera) {
+			debugger;
+
 			if (camera !== undefined && camera.isCamera !== true) {
 				console.error('THREE.WebGLRenderer.render: camera is not an instance of THREE.Camera.');
 				return;
@@ -36108,3 +36120,4 @@
 	Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGhyZWUuanMiLCJzb3VyY2VzIjpbXSwic291cmNlc0NvbnRlbnQiOltdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiIn0=

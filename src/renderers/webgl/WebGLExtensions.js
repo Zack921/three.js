@@ -1,7 +1,7 @@
 function WebGLExtensions( gl ) {
 
 	const extensions = {};
-
+	// gl.getExtension 表示启用一个 webgl 扩展
 	function getExtension( name ) {
 
 		if ( extensions[ name ] !== undefined ) {

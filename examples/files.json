@@ -1,5 +1,6 @@
  {
 	"webgl": [
+		"zack_cube",
 		"webgl_animation_cloth",
 		"webgl_animation_keyframes",
 		"webgl_animation_skinning_blending",
