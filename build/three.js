@@ -17489,19 +17489,30 @@
 
 			attributes = new WebGLAttributes(_gl, capabilities); // crud api for attributes
 
-			bindingStates = new WebGLBindingStates(_gl, extensions, attributes, capabilities);
-			geometries = new WebGLGeometries(_gl, attributes, info, bindingStates);
-			objects = new WebGLObjects(_gl, geometries, attributes, info);
+			bindingStates = new WebGLBindingStates(_gl, extensions, attributes, capabilities); // api for vao 顶点数组对象（Vertex Array ObjectO）是 WebGL（1.0）的一个扩展，通过它可以简化缓冲区的绑定过程，即可以减少代码的调用次数，也提升了 WebGL 状态切换的效率。
+
+			geometries = new WebGLGeometries(_gl, attributes, info, bindingStates); // 管理所有 geometry
+
+			objects = new WebGLObjects(_gl, geometries, attributes, info); // 管理所有 object
+
 			morphtargets = new WebGLMorphtargets(_gl);
 			clipping = new WebGLClipping(properties);
-			programCache = new WebGLPrograms(_this, cubemaps, extensions, capabilities, bindingStates, clipping);
-			materials = new WebGLMaterials(properties);
-			renderLists = new WebGLRenderLists(properties);
-			renderStates = new WebGLRenderStates(extensions, capabilities);
-			background = new WebGLBackground(_this, cubemaps, state, objects, _premultipliedAlpha);
-			shadowMap = new WebGLShadowMap(_this, objects, capabilities);
-			bufferRenderer = new WebGLBufferRenderer(_gl, extensions, info, capabilities);
-			indexedBufferRenderer = new WebGLIndexedBufferRenderer(_gl, extensions, info, capabilities);
+			programCache = new WebGLPrograms(_this, cubemaps, extensions, capabilities, bindingStates, clipping); // 收归所有 program 属性
+
+			materials = new WebGLMaterials(properties); // 用于更新 material 对应着色器的 Uniforms
+
+			renderLists = new WebGLRenderLists(properties); // 管理渲染列表，说明 threejs 是有控制物体渲染的顺序的
+
+			renderStates = new WebGLRenderStates(extensions, capabilities); // 管理场景渲染用到的一些状态，lightsArray，shadowsArray
+
+			background = new WebGLBackground(_this, cubemaps, state, objects, _premultipliedAlpha); // 处理场景背景
+
+			shadowMap = new WebGLShadowMap(_this, objects, capabilities); // 搞阴影！管理SM
+
+			bufferRenderer = new WebGLBufferRenderer(_gl, extensions, info, capabilities); // 真正绘制到缓冲区 gl.drawArrays
+
+			indexedBufferRenderer = new WebGLIndexedBufferRenderer(_gl, extensions, info, capabilities); // 通过索引绘制到缓冲区 gl.drawElements
+
 			info.programs = programCache.programs;
 			_this.capabilities = capabilities;
 			_this.extensions = extensions;
@@ -17514,7 +17525,8 @@
 
 		initGLContext(); // xr
 
-		const xr = new WebXRManager(_this, _gl);
+		const xr = new WebXRManager(_this, _gl); // 处理 vr&ar
+
 		this.xr = xr; // API
 
 		this.getContext = function () {
@@ -17945,7 +17957,8 @@
 			animation.start();
 		}
 
-		const animation = new WebGLAnimation();
+		const animation = new WebGLAnimation(); // 控制渲染流
+
 		animation.setAnimationLoop(onAnimationFrame);
 		if (typeof window !== 'undefined') animation.setContext(window);
 
