@@ -71,12 +71,13 @@ function WebGLRenderList( properties ) {
 	}
 
 	function getNextRenderItem( object, geometry, material, groupOrder, z, group ) {
-
+    debugger
 		let renderItem = renderItems[ renderItemsIndex ];
 		const materialProperties = properties.get( material );
 
 		if ( renderItem === undefined ) {
 
+			// first
 			renderItem = {
 				id: object.id,
 				object: object,

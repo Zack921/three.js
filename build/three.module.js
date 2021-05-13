@@ -13660,7 +13660,7 @@ function WebGLBackground( renderer, cubemaps, state, objects, premultipliedAlpha
 
 		let forceClear = false;
 		let background = scene.isScene === true ? scene.background : null;
-
+		debugger
 		if ( background && background.isTexture ) {
 
 			background = cubemaps.get( background );
@@ -17930,12 +17930,13 @@ function WebGLRenderList( properties ) {
 	}
 
 	function getNextRenderItem( object, geometry, material, groupOrder, z, group ) {
-
+    debugger
 		let renderItem = renderItems[ renderItemsIndex ];
 		const materialProperties = properties.get( material );
 
 		if ( renderItem === undefined ) {
 
+			// first
 			renderItem = {
 				id: object.id,
 				object: object,
@@ -24136,10 +24137,10 @@ function WebGLRenderer( parameters ) {
 	};
 
 	this.renderBufferDirect = function ( camera, scene, geometry, material, object, group ) {
-
+		debugger
 		if ( scene === null ) scene = _emptyScene; // renderBufferDirect second parameter used to be fog (could be null)
 
-		const frontFaceCW = ( object.isMesh && object.matrixWorld.determinant() < 0 );
+		const frontFaceCW = ( object.isMesh && object.matrixWorld.determinant() < 0 ); // in demo : false
 
 		const program = setProgram( camera, scene, material, object );
 
@@ -24179,7 +24180,7 @@ function WebGLRenderer( parameters ) {
 
 		}
 
-		bindingStates.setup( object, material, program, geometry, index );
+		bindingStates.setup( object, material, program, geometry, index ); // 这里写入顶点数据！！！
 
 		let attribute;
 		let renderer = bufferRenderer;
@@ -24257,11 +24258,11 @@ function WebGLRenderer( parameters ) {
 
 		}
 
-		if ( object.isInstancedMesh ) {
+		if ( object.isInstancedMesh ) { // in demo : undefined
 
 			renderer.renderInstances( drawStart, drawCount, object.count );
 
-		} else if ( geometry.isInstancedBufferGeometry ) {
+		} else if ( geometry.isInstancedBufferGeometry ) { // in demo : undefined
 
 			const instanceCount = Math.min( geometry.instanceCount, geometry._maxInstanceCount );
 
@@ -24269,7 +24270,7 @@ function WebGLRenderer( parameters ) {
 
 		} else {
 
-			renderer.render( drawStart, drawCount );
+			renderer.render( drawStart, drawCount ); // indexedBufferRenderer.render -> gl.drawElements
 
 		}
 
@@ -24398,7 +24399,7 @@ function WebGLRenderer( parameters ) {
 		//
 		if ( scene.isScene === true ) scene.onBeforeRender( _this, scene, camera, _currentRenderTarget );
 
-		currentRenderState = renderStates.get( scene, renderStateStack.length );
+		currentRenderState = renderStates.get( scene, renderStateStack.length ); // first: new WebGLRenderState
 		currentRenderState.init();
 
 		renderStateStack.push( currentRenderState );
@@ -24409,33 +24410,33 @@ function WebGLRenderer( parameters ) {
 		_localClippingEnabled = this.localClippingEnabled;
 		_clippingEnabled = clipping.init( this.clippingPlanes, _localClippingEnabled, camera );
 
-		currentRenderList = renderLists.get( scene, renderListStack.length );
+		currentRenderList = renderLists.get( scene, renderListStack.length ); // first: new WebGLRenderList
 		currentRenderList.init();
 
 		renderListStack.push( currentRenderList );
 
-		projectObject( scene, camera, 0, _this.sortObjects );
+		projectObject( scene, camera, 0, _this.sortObjects ); // 把 mesh 塞到 currentRenderList -> opaque.push(mesh)
 
 		currentRenderList.finish();
 
 		if ( _this.sortObjects === true ) {
 
-			currentRenderList.sort( _opaqueSort, _transparentSort );
+			currentRenderList.sort( _opaqueSort, _transparentSort ); // opaque.sort & transparent.sort
 
 		}
 
 		//
 
-		if ( _clippingEnabled === true ) clipping.beginShadows();
+		if ( _clippingEnabled === true ) clipping.beginShadows(); // in demo: false
 
 		const shadowsArray = currentRenderState.state.shadowsArray;
 
-		shadowMap.render( shadowsArray, scene, camera );
+		shadowMap.render( shadowsArray, scene, camera ); // render depth map
 
 		currentRenderState.setupLights();
 		currentRenderState.setupLightsView( camera );
 
-		if ( _clippingEnabled === true ) clipping.endShadows();
+		if ( _clippingEnabled === true ) clipping.endShadows(); // in demo: false
 
 		//
 
@@ -24443,7 +24444,7 @@ function WebGLRenderer( parameters ) {
 
 		//
 
-		background.render( currentRenderList, scene );
+		background.render( currentRenderList, scene ); // 先渲染出背景 -> 其实就是调用 renderer.setClearColor
 
 		// render scene
 
@@ -24455,7 +24456,7 @@ function WebGLRenderer( parameters ) {
 
 		//
 
-		if ( _currentRenderTarget !== null ) {
+		if ( _currentRenderTarget !== null ) {  // in demo: null
 
 			// Generate mipmap if we're using any kind of mipmap filtering
 
@@ -24649,7 +24650,7 @@ function WebGLRenderer( parameters ) {
 			const material = overrideMaterial === null ? renderItem.material : overrideMaterial;
 			const group = renderItem.group;
 
-			if ( camera.isArrayCamera ) {
+			if ( camera.isArrayCamera ) { // in demo: undefined
 
 				const cameras = camera.cameras;
 
@@ -24686,7 +24687,7 @@ function WebGLRenderer( parameters ) {
 		object.modelViewMatrix.multiplyMatrices( camera.matrixWorldInverse, object.matrixWorld );
 		object.normalMatrix.getNormalMatrix( object.modelViewMatrix );
 
-		if ( object.isImmediateRenderObject ) {
+		if ( object.isImmediateRenderObject ) { // in demo: undefined
 
 			const program = setProgram( camera, scene, material, object );
 
@@ -24707,7 +24708,7 @@ function WebGLRenderer( parameters ) {
 	}
 
 	function getProgram( material, scene, object ) {
-
+		debugger
 		if ( scene.isScene !== true ) scene = _emptyScene; // scene could be a Mesh, Line, Points, ...
 
 		const materialProperties = properties.get( material );
@@ -24720,7 +24721,7 @@ function WebGLRenderer( parameters ) {
 		const parameters = programCache.getParameters( material, lights.state, shadowsArray, scene, object );
 		const programCacheKey = programCache.getProgramCacheKey( parameters );
 
-		let programs = materialProperties.programs;
+		let programs = materialProperties.programs; // in demo: undefined
 
 		// always update environment and fog - changing these trigger an getProgram call, but it's possible that the program doesn't change
 
@@ -24741,7 +24742,7 @@ function WebGLRenderer( parameters ) {
 
 		let program = programs.get( programCacheKey );
 
-		if ( program !== undefined ) {
+		if ( program !== undefined ) { // in demo: undefined
 
 			// early out if program and light state is identical
 
@@ -24755,13 +24756,13 @@ function WebGLRenderer( parameters ) {
 
 		} else {
 
-			parameters.uniforms = programCache.getUniforms( material );
+			parameters.uniforms = programCache.getUniforms( material ); // 拿到材质对应shader所需的 uniforms
 
 			material.onBuild( parameters, _this );
 
 			material.onBeforeCompile( parameters, _this );
 
-			program = programCache.acquireProgram( parameters, programCacheKey );
+			program = programCache.acquireProgram( parameters, programCacheKey ); // 获取 webgl program
 			programs.set( programCacheKey, program );
 
 			materialProperties.uniforms = parameters.uniforms;
@@ -24834,7 +24835,7 @@ function WebGLRenderer( parameters ) {
 	}
 
 	function setProgram( camera, scene, material, object ) {
-
+		debugger
 		if ( scene.isScene !== true ) scene = _emptyScene; // scene could be a Mesh, Line, Points, ...
 
 		textures.resetTextureUnits();
@@ -24845,7 +24846,7 @@ function WebGLRenderer( parameters ) {
 		const envMap = cubemaps.get( material.envMap || environment );
 		const vertexAlphas = material.vertexColors === true && object.geometry && object.geometry.attributes.color && object.geometry.attributes.color.itemSize === 4;
 
-		const materialProperties = properties.get( material );
+		const materialProperties = properties.get( material ); // in demo: {}
 		const lights = currentRenderState.state.lights;
 
 		if ( _clippingEnabled === true ) {
@@ -24924,7 +24925,7 @@ function WebGLRenderer( parameters ) {
 
 		//
 
-		let program = materialProperties.currentProgram;
+		let program = materialProperties.currentProgram; // in demo: undefined
 
 		if ( needsProgramChange === true ) {
 

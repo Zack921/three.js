@@ -23,7 +23,7 @@ function WebGLBackground( renderer, cubemaps, state, objects, premultipliedAlpha
 
 		let forceClear = false;
 		let background = scene.isScene === true ? scene.background : null;
-
+		debugger
 		if ( background && background.isTexture ) {
 
 			background = cubemaps.get( background );
