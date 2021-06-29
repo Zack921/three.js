@@ -17773,7 +17773,7 @@ function WebGLPrograms( renderer, cubemaps, extensions, capabilities, bindingSta
 		}
 
 		if ( program === undefined ) {
-
+			debugger
 			program = new WebGLProgram( renderer, cacheKey, parameters, bindingStates );
 			programs.push( program );
 
@@ -23665,7 +23665,7 @@ function WebGLRenderer( parameters ) {
 
 		extensions.init( capabilities );
 
-		utils = new WebGLUtils( _gl, extensions, capabilities ); // 提供一个 convert 来拿属性
+		utils = new WebGLUtils( _gl, extensions, capabilities ); // 提供一个 convert 函数来拿属性
 
 		state = new WebGLState( _gl, extensions, capabilities ); // 修改 webgl 状态
 
